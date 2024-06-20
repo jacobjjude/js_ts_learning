@@ -4,27 +4,12 @@ function tableFor(event, journal) {
     let table = [0,0,0,0];
     for (let i = 0; i < journal.length; i++) {
         let entry = journal[i], index = 0;
-        // console.log(`
-        //     Events: ${entry.events}
-        //     Squirrel: ${entry.squirrel}
-        //     index: ${index}
-        //     ---------------------------------------
-        //     `);
         if (entry.events.includes(event)) index += 1;
         if (entry.squirrel) index += 2;
         table[index] += 1;
     }
-
     return table;
 }
-
-// function phi_(table) {
-//     return (table[3] * table[0] - table[2] * table[1]) /
-//     Math.sqrt((table[2] + table[3]) *
-//     (table[0] + table[1]) *
-//     (table[1] + table[3]) *
-//     (table[0] + table[2]));
-// }
 
 function phi(x) {
     return (x[3] * x[0] - x[2] * x[1]) /
@@ -36,7 +21,34 @@ function phi(x) {
     );
 }
 
-let results = tableFor("pizza", JOURNAL);
-let correlation = phi(results);
-console.log(results);
-console.log(correlation);
+//Now, lets get every unique event and automate the correlation process.
+function getUniqueEvents(journal) {
+    let uniqueEvents = [];
+    for (let i = 0; i < journal.length; i++) {
+        let journalEvents = journal[i].events
+        for (let i = 0; i < journalEvents.length; i++) {
+            if (!uniqueEvents.includes(journalEvents[i])) {
+                uniqueEvents.push(journalEvents[i])
+            } 
+        }
+    }
+
+    return uniqueEvents;
+}
+
+function totalCorrelation(unique, journal) {
+    let correlationArray = [];
+    for (let i = 0; i < unique.length; i++) {
+        let obj = {};
+        let results = parseFloat(phi(tableFor(unique[i], journal)).toFixed(2));
+        obj.event = unique[i];
+        obj.correlation = results;
+        correlationArray.push(obj);
+    }
+    return correlationArray;
+}
+
+let uniqueEvents = getUniqueEvents(JOURNAL);
+let correlationResults = totalCorrelation(uniqueEvents, JOURNAL);
+let sortedResults = correlationResults.sort((a, b) => b.correlation-a.correlation);
+console.log(sortedResults);
