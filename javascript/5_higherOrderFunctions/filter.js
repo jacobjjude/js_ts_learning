@@ -10,4 +10,14 @@ function filter(array, test) {
     return passed;
 }
 
+function map(array, transform) {
+    let mapped = [];
+    for (let element of array) {
+        mapped.push(transform(element));
+    }
+    return mapped;
+}
+
 console.log(filter(SCRIPTS, script => script.living));
+let rtlscripts = SCRIPTS.filter(s => s.direction == "rtl");
+console.log(map(rtlscripts, s => s.name));
