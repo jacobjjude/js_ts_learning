@@ -193,6 +193,72 @@ console.log(ages_2.has("toString"));
 console.log(Object.hasOwn({x: 1}, "x"));
 console.log(Object.hasOwn({x: 1}, "toString"));
 
+newSection();
+console.log("POLYMORPHISM");
+
+// - When you call the String function on an object, it will call the toString method to try and create a meaningful string from it.
+// - We can write our own toString to create a string that contains more useful information
+
+Rabbit.prototype.toString = function() {
+  return `a ${this.type} rabbit`;
+}
+console.log(String(killerRabbit));
+
+// **Polymorphism** - When a piece of code is written to work with objects, any kind of object that happens to support this interface can be plugged into the code and will be able to work with it.
+// Polymorphic code can work with values of different shapres, as long as they support the interface it expects
+newSection();
+console.log("GETTERS, SETTERS, AND STATIC");
+
+// - Interfaces often contain plain properties, not just methods
+// - - Map objects have a size property that tells you how many keys are stored in them.
+// **Getters** - a method call within a property. Defined by writing get in front of the method name in an object expression or class declaration
+
+let varyingSize = {
+  get size() {
+    return Math.floor(Math.random() * 100);
+  }
+};
+
+console.log(varyingSize.size);
+console.log(varyingSize.size);
+
+// - whenever someone reads from this object's size property, the associated method is called.
+// - you do a similar thing when a property is written to, using a **setter**
+
+class Temperature {
+  constructor(celsius) {
+    this.celsius = celsius;
+  }
+
+  get fahrenheit() {
+    return this.celsius * 1.8 + 32;
+  }
+  set fahrenheit(value) {
+    this.celsius = (value - 32) / 1.8;
+  }
+
+  static fromFahrenheit(value) {
+    return new Temperature((value - 32) / 1.8);
+  }
+}
+
+let temp = new Temperature(22);
+console.log("Convert 22 celsius to fahrenheit: ");
+console.log(temp.fahrenheit);
+console.log("Convert 86 fahrenheit to celsius: ")
+temp.fahrenheit = 86;
+console.log(temp.celsius);
+
+// - Temperature class allows you to read and write the temperature in either celsius or fahrenheit, but only stores celsius.
+// - Sometimes you want to attach some properties directly to your constructor function rather than the prototype. You won't be able to to have access to a class instance but those methods can be used to provide additional ways to create instances (how?)
+// - Inside a class declaration, methods or properties that have static written before their name are stored on the constructor.
+// - - the Temperature class allowed you to write Temperature.fromFahrenheit(100) to create a temperature using F
+
+let boil = Temperature.fromFahrenheit(212);
+console.log(`Boiling in celsius: ${boil.celsius}`);
+newSection();
+console.log("SYMBOLS");
+
 //Making my life easier
 function newSection() {
   return console.log("------------------------\n \n");
