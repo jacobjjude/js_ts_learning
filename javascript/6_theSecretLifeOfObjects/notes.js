@@ -250,7 +250,7 @@ temp.fahrenheit = 86;
 console.log(temp.celsius);
 
 // - Temperature class allows you to read and write the temperature in either celsius or fahrenheit, but only stores celsius.
-// - Sometimes you want to attach some properties directly to your constructor function rather than the prototype. You won't be able to to have access to a class instance but those methods can be used to provide additional ways to create instances (how?)
+// - Sometimes you want to attach some properties directly to your constructor function rather than the prototype. You won't be able to have access to a class instance but those methods can be used to provide additional ways to create instances (how?)
 // - Inside a class declaration, methods or properties that have static written before their name are stored on the constructor.
 // - - the Temperature class allowed you to write Temperature.fromFahrenheit(100) to create a temperature using F
 
@@ -258,6 +258,145 @@ let boil = Temperature.fromFahrenheit(212);
 console.log(`Boiling in celsius: ${boil.celsius}`);
 newSection();
 console.log("SYMBOLS");
+
+// - for/of cna loop over several kinds of data structures. This is another case of polymorphism
+// - We can add this interface to our own objects
+// - It's possible for multiple interfaces to use the same property name for different things. (i.e. Array uses length, but a hiking trail object could also use length to describe something else)
+// - For iteration protocol, designers needed something that really doesn't conflict with any other property. Symbols were added in 2015.
+// **Symbol** - Property created with Symbol function instead of string. 
+// - Unlike strings, newly created symbols are unique, you cannot create the same symbol twice
+
+let sym = Symbol("name");
+console.log(sym == Symbol("name"));
+Rabbit.prototype[sym] == 55;
+console.log(killerRabbit[sym]);
+
+// - Being both unique and usable as property names makes symbols suitable for defining interfaces that can peacefully live alongside other properties, no matter what their names are
+
+const length = Symbol("length");
+Array.prototype[length] = 0;
+
+console.log([1, 2].length);
+console.log([1, 2][length]);
+
+//it is possible to include symbol properties in object expressions and classes by using square brackets around the property name.
+
+let myTrip = {
+  length: 2,
+  0: "Lankwitz",
+  1: "Babelsburg",
+  [length]: 21500
+};
+console.log(myTrip[length], myTrip.length);
+
+newSection();
+console.log("THE ITERATOR INTERFACE");
+
+// - The object given to a for/of loop is expected to be iterable. This means it has a method with the Symbol.iterator symbol.
+// - When called, that method should return an object that provides a second interface, iterator.
+// - This is the thing that iterates, has a next method that returns the next result. That result is an object with a value property that provides the next value (if there is one), or done (if not).
+// - Next, value, and done property names are plain strings.
+
+let okIterator = "OK"[Symbol.iterator]();
+console.log(okIterator.next());
+console.log(okIterator.next());
+console.log(okIterator.next());
+
+class List {
+  constructor(value, rest) {
+    this.value = value;
+    this.rest = rest;
+  }
+  get length() {
+    return 1 + (this.rest ? this.rest.length : 0);
+  }
+  static fromArray(array) {
+    let result = null;
+    for (let i = array.length - 1; i >= 0; i--) {
+      result = new this(array[i], result);
+    }
+    return result;
+  }
+}
+
+class ListIterator {
+  constructor(list) {
+    this.list = list;
+  }
+
+  next() {
+    if (this.list == null) {
+      return {done: true};
+    }
+    let value = this.list.value;
+    this.list = this.list.rest;
+    return {value, done: false};
+  }
+}
+
+List.prototype[Symbol.iterator] = function() {
+  return new ListIterator(this);
+};
+
+let list = List.fromArray([1,2,3]);
+for (let element of list) {
+  console.log(element);
+}
+
+// SOMETHING HERE BREAKS AND IM NOT QUITE SURE WHAT
+
+newSection();
+console.log("INHERITANCE");
+
+// - JavaScript's prototype system makes it possible to create a new class, much like the old class, but with new definition for some of its properties.
+// - The prototype for the new class derives from the old class, but adds a new definition for properties. This is called **inheritance**
+// The new class inherits properties and behavior from the old class
+
+class LengthList extends List {
+  #length;
+
+  constructor(value, rest) {
+    super(value, rest);
+    this.#length = super.length;
+  }
+  get length() {
+    return this.#length;
+  }
+}
+
+console.log(LengthList.fromArray([1,2,3]).length);
+
+// - The use of the word extends indicates that this class shouldn't directy be based on the default Object prototype, but on some other class.
+// - - This is the superclass. Derived class is the subclass
+// - Initializing, LengthList constructor called the constructor of its superclass through the super keyword.
+// - Constructor then stores length list in a private property. #length is now filled out, when it wasn't before
+// - Inheritance allows us to build slightly different data types from existing data types with relatively little work. Controversial because encapsulation and polymorphism separate, while inheritance causes tangle.
+
+newSection();
+console.log("THE INSTANCEOF OPERATOR");
+
+// - It's occasionally useful to know whether an object was derived from a specific class. JavaScript has a binary operator called instanceof
+
+console.log(
+  new LengthList(1, null) instanceof LengthList
+);
+console.log(new LengthList(2, null) instanceof List);
+console.log(new List(3, null) instanceof LengthList);
+console.log([1] instanceof Array);
+
+// - The operator will see through inherited types, so a LengthList is an instance of List. Almost every object is an instance of Object.
+
+newSection();
+console.log("SUMMARY");
+
+// - Objects hold more than just their own properties. They habve prototypes, which are other objects.
+// - Simple objects have Object.prototype as their prototype
+// - Constructors, whose names usually start with a capital letter, can be used with the new operator to create new objects.
+// - There's a class notation that provides a clear way to define a constructor and its prototype.
+// - You can definte getters and setters to secretly call methods every time and object's property is accessed. 
+// - Static methods are stored in the class's constructor rather than its prototype.
+// - instanceof tells you whether or not an object is an instance of that constructor.
+//
 
 //Making my life easier
 function newSection() {
