@@ -64,7 +64,7 @@ let first = new VillageState(
 function runRobot(state, robot, memory) {
     for (let turn=0;; turn++) {
         if(state.parcels.length == 0) {
-            console.log(`Done in ${turn} turns`);
+            // console.log(`Done in ${turn} turns`);
             return turn;
             break;
         }
@@ -145,7 +145,6 @@ function goalOrientedRobot ({place, parcels}, route) {
 }
 
 let task = VillageState.random();
-console.log(task);
 
 // Exercise 1:
 // Write a function that compares two robots
@@ -153,10 +152,6 @@ console.log(task);
 // Output the average number of steps each robot took per task
 // Same tasks per robot
 
-let goalBot = runRobot(VillageState.random(), goalOrientedRobot, mailRoute);
-let randoBot = runRobot(VillageState.random(), randomRobot);
-console.log(goalBot);
-console.log(randoBot);
 
 function compareRobots(robot1, robot2, tasktotal) {
     let total1 = 0;
@@ -170,8 +165,45 @@ function compareRobots(robot1, robot2, tasktotal) {
         total1 += result1;
         total2 += result2
     }
-    console.log(total1 / tasktotal);
-    console.log(total2 / tasktotal);
+
+    console.log(`Robot 1 average steps: ${total1 / tasktotal}`);
+    console.log(`Robot 2 average steps: ${total2 / tasktotal}`);
 }
 
-compareRobots(randomRobot, goalOrientedRobot, 100);
+function bfs(graph, start) {
+    const queue = [start];
+    const visited = new Set();
+    const result = [];
+
+    while (queue.length) {
+        const vertex = queue.shift();
+
+        if (!visited.has(vertex)) {
+            visited.add(vertex);
+            result.push(vertex);
+
+            for (const neighbor of graph[vertex]) {
+                queue.push(neighbor);
+            }
+        }
+    }
+
+    return result;
+}
+
+function bfsRobot({place, parcels}, route) {
+    if (route.length == 0) {
+        let routes = parcels.map(parcel => {
+            if (parcel.place != place) {
+                return findRoute(roadGraph, place, parcel.place);
+            } else {
+                return findRoute(roadGraph, place, parcel.address);
+            }
+        });
+
+        route = routes.reduce((a, b) => a.length < b.length ? a : b);
+    }
+    return {direction: route[0], memory: route.slice(1)};
+}
+
+compareRobots(bfsRobot, randomRobot, 100);
