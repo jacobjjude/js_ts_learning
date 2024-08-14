@@ -86,7 +86,7 @@ function randomRobot(state) {
     return {direction: randomPick(roadGraph[state.place])};
 }
 
-VillageState.random = function(parcelCount = 5) {
+VillageState.random = function(parcelCount = 20) {
     let parcels = [];
     for (let i = 0; i < parcelCount; i++) {
         let address = randomPick(Object.keys(roadGraph));
@@ -206,4 +206,4 @@ function bfsRobot({place, parcels}, route) {
     return {direction: route[0], memory: route.slice(1)};
 }
 
-compareRobots(bfsRobot, randomRobot, 100);
+compareRobots(bfsRobot, goalOrientedRobot, 100000);
