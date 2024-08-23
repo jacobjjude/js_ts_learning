@@ -49,7 +49,7 @@
 
 - When the types of a program are known, its possible for the computer to _check_ them for you, pointing out mistakes before the program is run (hello again, TypeScript)
 
-### Testing
+## Testing
 
 - If the program won't help us find mistakes, we'll have to do it the hard way: by running the program and seeing whether it does the right thing.
 - Doing this by hand, again and again, is a bad idea.
@@ -61,9 +61,16 @@
 - Some code is easier to test than others
   - The more external objects that the code interacts with, the harder it is to set up the context in which to test it.
 
-### Debugging
+## Debugging
 
--
+- Sometimes the line that triggered the problem is simply the first place where a flaky value produced elsewhere gets used.
+- Don't make random changes to the code to see whehter that makes it better
+  - Instead, think. Analyze what is happening and come up with a theory of why it might be happening.
+  - Then, make additional observations to test this theory - or if you don't have a theory, make additional observations to help you come up with one.
+  - Put in a few strategic console.log calls.
+- An alternative to using console.log is to use the debugger capabilities.
+- Set a _breakpoint_ on a specific line of code.
+- Another way to set a breakpoint is to include a *debugger* statement.
 
 ## Error Propagation
 
@@ -79,3 +86,47 @@
     - Maybe by asking again or filling in a default value.
     - Or it could return a special value to its caller to indicate that it failed to do what it was asked.
 - In many situations, returning a special value is a good way to indicate an error
+
+## Exceptions
+- *Exception handling* - Stop what we are doing and jump to a place that knows how to handle the problem.
+- Exceptions are a mechanism that makes it possible for code that runs into a problem to *raise* (or *throw*) an exception.
+- Exception can be any value
+- Raising an exception jumps out of not just the current function but also its callers, all the way down to the first call that started the current execution.
+- ^^ *unwinding the stack*
+- If exceptions always zoomed to the bottom of the stack, they wouldnt be much use.
+  - Instead, we can set "obstacles" along the stack to *catch* the exception.
+- The *throw* keyword is used to raise an exception
+  - Catching one is done by wrapping a piece of code in a try block, followed by the keyword *catch*
+  - After the catch block finishes, or if the try block finishes without problems, the program proceeds beneath the entire try/catch statement.
+- *Stack trace* - the call stack that existed when the exception was created.
+- The big advantage of exceptions: error-handling code only at the point where the error occurs and at the point where it is handled.
+
+## Cleaning up after exceptions
+- The effect of an exception is another kind of control flow. 
+- Every action that might cause an exception might cause control to suddenly leave your code.
+  - This means that when code has several side effects, even if its "regular" control flow looks like they'll always happen, an exception might prevent some of them from taking place.
+- One way to address this is to use fewer side effects
+- A programming style that computes new values instead of changing existing values helps.
+- Try statements have another feature: they may be followed by a finally block
+- *finally* - a block that says "no matter what happens, run this code after trying to run the code in the try block"
+
+## Selective Catching
+- When an exception makes it all the way to the bottom of the stack without being caught, it gets handled by the environment.
+- In browsers, a description of the error gets written to the JavaScript console.
+- In Node, it aborts the whole process when an unhandled exception occurs.
+- For programming mistakes, just letting tje error go through is often the best you can do.
+- For problems that are *expected* to happen during routine use, crashing with an unhandled exception is a terrible strategy.
+- The for (;;) construct is a way to intentionally create a loop that doesn't terminate on its own. 
+  - We break out of the loop only when a valid direction is given.
+
+## Assertions
+- *Assertions* - are checks inside the program that verify that something is the way its suposed to be.
+- They are not used to handle situations that can come up in normal operation but to find programmer mistakes.
+- Loudly blowing up program instead of silently returning undefined.
+- Do not write assertions for every possible kind of bad input. Reserve them for mistakes that are easy to make
+
+## Summary
+- An important part of programming is finding, diagnosing, and fixing bugs.
+- Problems become easier to notice if you have an automated test suite or add assertions to your programs.
+- Throwing an exception causes the call stack to be unwound until the next enclosing try/catch block or until the bottom of the stack.
+- To help address the unpredictable control flow caused by exceptions, *finally* blocks can be used to ensure that a piece of code **always** runs when a block finishes.
