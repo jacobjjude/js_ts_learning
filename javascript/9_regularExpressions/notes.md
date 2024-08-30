@@ -67,4 +67,17 @@ console.log(/[0-9]/.test("in 1992"));
 - To indicate that a pattern should occur a precise number of times, use brace. 
   - Putting {4} after an element, requires it to occur exactly 4 times.
   - Its also possible to specify a range this way: {2,4} means the element must occur at least twice and at most four times.
+
+## Grouping subexpressions
+- To use an operator like * or + on more than one element at a time, you must use parenthesis.
+- A part of a regular expression that is enclosed in parenthesis counts as a single element as far as the operators following it are concerned.
+
+## Matches and Groups
+- The test method is the absolute simplest way to match a regular expression.
+  - It tells you only whether it matched and nothing else
+- Also there's the exec (execute) method that will return null if no match was found and return an object with information about the match otherwise
+- An object returned from exec has an index property that tells us where in the string the successful match begins.
+- When the regular expression contains subexpressions grouped with parenthesis, the text that matched those groups will also show up in the array.
+- The whole match is always the first element
+  - The next element is the part matched by the first group (the one whose opening parenthesis comes first in the expression), then the second group, and so on.
 - 

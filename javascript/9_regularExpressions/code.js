@@ -27,3 +27,14 @@ console.log(neighbor.test("neighbour"));
 // → true
 console.log(neighbor.test("neighbor"));
 // -> true
+
+let cartoonCrying = /boo+(hoo+)+/i;
+//i makes it case-insensitive
+console.log(cartoonCrying.test("Boohoooohoohoo"));
+
+let match = /\d+/.exec("one two 100");
+console.log(match);
+console.log(match.index);
+
+let quotedText = /'([^']*)'/;
+console.log(quotedText.exec("she said 'hello'"));
